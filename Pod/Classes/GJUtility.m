@@ -78,16 +78,44 @@
     return [documentsPath stringByAppendingPathComponent:name];
 }
 
-+ (UIImage *)fixImageOrientation:(UIImage*)image {
++ (UIImage *)rotateImage:(UIImage *)image rotationDirection:(GJRotationDirection)direction {
     
+    // Now we draw the underlying CGImage into a new context, applying the transform
+    // calculated above.
+    CGContextRef ctx;
+    
+    if(direction == kGJ_RotateLeft || direction == kGJ_RotateRight) {
+        ctx = CGBitmapContextCreate(NULL, image.size.height, image.size.width,
+                                    CGImageGetBitsPerComponent(image.CGImage), 0,
+                                    CGImageGetColorSpace(image.CGImage),
+                                    CGImageGetBitmapInfo(image.CGImage));
+        CGContextDrawImage(ctx, CGRectMake(0,0,image.size.height,image.size.width), image.CGImage);
+    } else {
+        ctx = CGBitmapContextCreate(NULL, image.size.width, image.size.height,
+                                    CGImageGetBitsPerComponent(image.CGImage), 0,
+                                    CGImageGetColorSpace(image.CGImage),
+                                    CGImageGetBitmapInfo(image.CGImage));
+        CGContextDrawImage(ctx, CGRectMake(0,0,image.size.width,image.size.height), image.CGImage);
+    }
+    
+    // And now we just create a new UIImage from the drawing context
+    CGImageRef cgimg = CGBitmapContextCreateImage(ctx);
+    UIImage *img = [UIImage imageWithCGImage:cgimg];
+    CGContextRelease(ctx);
+    CGImageRelease(cgimg);
+    return img;
+}
+
++ (UIImage *)fixImageOrientation:(UIImage *)image fromOrientation:(UIImageOrientation)orientation {
     // No-op if the orientation is already correct
-    if (image.imageOrientation == UIImageOrientationUp) return image;
+    
+    if (orientation == UIImageOrientationUp) return image;
     
     // We need to calculate the proper transformation to make the image upright.
     // We do it in 2 steps: Rotate if Left/Right/Down, and then flip if Mirrored.
     CGAffineTransform transform = CGAffineTransformIdentity;
     
-    switch (image.imageOrientation) {
+    switch (orientation) {
         case UIImageOrientationDown:
         case UIImageOrientationDownMirrored:
             transform = CGAffineTransformTranslate(transform, image.size.width, image.size.height);
@@ -110,7 +138,7 @@
             break;
     }
     
-    switch (image.imageOrientation) {
+    switch (orientation) {
         case UIImageOrientationUpMirrored:
         case UIImageOrientationDownMirrored:
             transform = CGAffineTransformTranslate(transform, image.size.width, 0);
@@ -136,7 +164,7 @@
                                              CGImageGetColorSpace(image.CGImage),
                                              CGImageGetBitmapInfo(image.CGImage));
     CGContextConcatCTM(ctx, transform);
-    switch (image.imageOrientation) {
+    switch (orientation) {
         case UIImageOrientationLeft:
         case UIImageOrientationLeftMirrored:
         case UIImageOrientationRight:
@@ -156,6 +184,11 @@
     CGContextRelease(ctx);
     CGImageRelease(cgimg);
     return img;
+}
+
++ (UIImage *)fixImageOrientation:(UIImage*)image {
+    
+    return [GJUtility fixImageOrientation:image fromOrientation:image.imageOrientation];
 }
 
 + (UIColor*)getPixelColorAtLocation:(CGPoint)point forImage:(UIImage*)image {
