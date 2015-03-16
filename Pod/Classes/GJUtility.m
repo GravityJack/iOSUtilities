@@ -285,7 +285,7 @@
                                          8,      // bits per component
                                          bitmapBytesPerRow,
                                          colorSpace,
-                                         kCGImageAlphaPremultipliedFirst);
+                                         (CGBitmapInfo)  kCGImageAlphaPremultipliedFirst);
         if (context == NULL)
         {
             free (bitmapData);
