@@ -1,9 +1,8 @@
 //
 //  GJConstants.h
-//  Bcard
 //
 //  Created by Brad Flegel on 3/16/15.
-//  Copyright (c) 2015 bcard. All rights reserved.
+//  Copyright (c) 2015 GravityJack. All rights reserved.
 //
 
 #ifndef GJiOSUtilities_GJConstants_h
