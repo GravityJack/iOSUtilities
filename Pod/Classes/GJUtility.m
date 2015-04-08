@@ -44,7 +44,13 @@
 
 + (NSString *)urlEncode:(NSString*)string {
     
-    return (__bridge NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, (__bridge CFStringRef)string, NULL, (CFStringRef)@"!*'();:@&=+$,/?%#[]", kCFStringEncodingUTF8);
+    CFStringRef urlStringRef = CFURLCreateStringByAddingPercentEscapes(NULL, (__bridge CFStringRef)string, NULL, (CFStringRef)@"!*'();:@&=+$,/?%#[]", kCFStringEncodingUTF8);
+    
+    NSString *encodedString = (__bridge NSString*)urlStringRef;
+    
+    CFRelease(urlStringRef);
+    
+    return encodedString;
 }
 
 + (NSDictionary *)removeNulls:(NSDictionary*)dict {
