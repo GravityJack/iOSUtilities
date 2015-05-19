@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "GJiOSUtilities"
-  s.version          = "0.0.7"
+  s.version          = "0.0.8"
   s.summary          = "GravityJack iOS utility class."
   s.description      = <<-DESC
                        Initial compilation of frequently used methods when developing iOS applications.
